@@ -1,0 +1,79 @@
+# command-center
+
+Personal CLI orchestrator: route natural-language commands to projects under `~/projects`. **v1** ships a config-driven keyword router and a **stub** adapter (no HTTP/MCP yet).
+
+## Requirements
+
+- Node.js 20+
+
+## Install
+
+```bash
+cd ~/projects/command-center
+npm install
+npm run build
+```
+
+Run locally:
+
+```bash
+node dist/cli.js --help
+# or
+npm start -- --help
+```
+
+Optional global link:
+
+```bash
+npm link
+command-center --help
+```
+
+## Commands
+
+| Command | Description |
+|--------|-------------|
+| `command-center list` | List project folder names under your configured projects root |
+| `command-center route "<text>"` | Show JSON route result (keyword → project) |
+| `command-center handle "<text>"` | Route + run stub adapter (JSON) |
+| `command-center doctor` | Print resolved `projectsRoot` and list folders |
+| `command-center config-path` | Show config file path (`COMMAND_CENTER_CONFIG` overrides) |
+
+## Configuration
+
+Default file: `~/.config/command-center/config.json` (optional). If missing, built-in defaults apply (see `src/config/defaults.ts`).
+
+Example:
+
+```json
+{
+  "version": 1,
+  "projectsRoot": "~/projects",
+  "routes": [
+    { "keywords": ["fantasy", "lineup"], "projectId": "fantasy-football-app" }
+  ]
+}
+```
+
+## GitHub
+
+Create the remote repository under **gprash77** with the same name as this folder:
+
+```bash
+git remote add origin https://github.com/gprash77/command-center.git
+git branch -M main
+git push -u origin main
+```
+
+## Development
+
+```bash
+npm test
+npm run typecheck
+```
+
+## Roadmap
+
+- **v2**: Real adapters (HTTP/subprocess), golden transcript tests
+- **v3**: VoicePress handoff + MCP pilots
+- **v4**: Optional dashboard / agent orchestrator

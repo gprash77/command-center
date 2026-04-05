@@ -102,6 +102,19 @@ Example (`projectAdapters` — omit = stub only for that app):
 - **script**: runs `sh -c <command>` with `cwd` = that project folder; user text is in env **`COMMAND_CENTER_TEXT`**.
 - **mcp**: spawns **`command`** with **`args`** (optional), **`cwd`** optional (default = project root; absolute or relative to that project). Calls MCP tool **`tool`** with arguments `{ "<textArgumentKey>": "<phrase>" }` (default key `text`). Uses the official MCP TypeScript SDK over stdio.
 
+### Real MCP pilots (fantasy + codex)
+
+Example **`projectAdapters`** for **`fantasy-football-app`** (`get_optimal_lineup`) and **`codex-app-builder`** (`get_watch_ideas`): copy the entries from [`docs/mcp-two-apps.example.json`](docs/mcp-two-apps.example.json) into `~/.config/command-center/config.json` (merge with any keys you already have — do not replace the whole file unless you intend to).
+
+Then:
+
+```bash
+command-center handle "fantasy lineup"
+command-center handle "get ideas for a thriller"
+```
+
+See `~/projects/fantasy-football-app/mcp/README.md` and `~/projects/codex-app-builder/mcp/README.md` for tool semantics.
+
 ## GitHub
 
 Create the remote repository under **gprash77** with the same name as this folder:

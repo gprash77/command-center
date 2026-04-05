@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "projectAdapters": {
+    "fantasy-football-app": {
+      "type": "mcp",
+      "command": "node",
+      "args": ["./node_modules/tsx/dist/cli.mjs", "mcp/lineup-server.ts"],
+      "tool": "get_optimal_lineup"
+    },
+    "codex-app-builder": {
+      "type": "mcp",
+      "command": "node",
+      "args": ["./node_modules/tsx/dist/cli.mjs", "mcp/ideas-server.ts"],
+      "tool": "get_watch_ideas"
+    }
+  }
+}

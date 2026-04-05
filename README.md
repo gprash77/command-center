@@ -43,6 +43,15 @@ command-center --help
 
 Default file: `~/.config/command-center/config.json` (optional). If missing, built-in defaults apply (see `src/config/defaults.ts`).
 
+**Built-in defaults** include every folder name under your typical `~/projects` list (11 apps), each with the **folder slug** as a keyword plus a few extra phrases. You can smoke-test routing with:
+
+```bash
+node dist/cli.js route "ai-news-summary"
+node dist/cli.js route "voicepress"
+```
+
+Routing is **substring** match on keywords (first hit wins). Avoid short keywords that appear inside another project’s slug; defaults are tuned for that.
+
 Example:
 
 ```json

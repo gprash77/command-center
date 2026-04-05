@@ -7,6 +7,10 @@ import { loadConfig, resolveProjectsRoot } from "./config/loadConfig.js";
 import { defaultConfigPath } from "./config/paths.js";
 import { listProjectIds, projectPath } from "./projects/listProjects.js";
 import { readStdinText } from "./cli/readStdin.js";
+import {
+  formatHandleForDisplay,
+  resolveOutputMode,
+} from "./cli/formatHandleOutput.js";
 import { routeCommand, handleCommand } from "./ops/commands.js";
 import { startDashboardServer } from "./dashboard/server.js";
 
@@ -53,21 +57,31 @@ program
   .description(
     "Route and invoke the configured adapter (stub, http, script, or mcp)",
   )
+  .option("--json", "always print JSON (default when output is piped to a file or another command)")
+  .option(
+    "--text",
+    "always print human-readable text (default when running in a terminal)",
+  )
   .argument(
     "[text]",
     "Natural language command; use `-` or omit to read from stdin (pipe or paste + Ctrl-D)",
   )
-  .action(async (text: string | undefined) => {
-    const resolved =
-      text === undefined || text === "-" ? readStdinText() : text;
-    const payload = await handleCommand(resolved);
-    if (!payload.ok) {
-      console.log(JSON.stringify(payload, null, 2));
-      process.exitCode = 1;
-      return;
-    }
-    console.log(JSON.stringify(payload, null, 2));
-  });
+  .action(
+    async (
+      text: string | undefined,
+      options: { json?: boolean; text?: boolean },
+    ) => {
+      const resolved =
+        text === undefined || text === "-" ? readStdinText() : text;
+      const payload = await handleCommand(resolved);
+      const mode = resolveOutputMode(options);
+      const out = formatHandleForDisplay(payload, mode);
+      console.log(out);
+      if (!payload.ok) {
+        process.exitCode = 1;
+      }
+    },
+  );
 
 program
   .command("dashboard")

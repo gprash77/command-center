@@ -1,4 +1,5 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import { formatHandleForDisplay } from "../cli/formatHandleOutput.js";
 import { routeCommand, handleCommand } from "../ops/commands.js";
 import { dashboardPageHtml } from "./pageHtml.js";
 
@@ -59,7 +60,8 @@ export function startDashboardServer(port: number): Promise<{
         }
         const text = typeof body.text === "string" ? body.text : "";
         const result = await handleCommand(text);
-        json(res, 200, result);
+        const formatted = formatHandleForDisplay(result, "text");
+        json(res, 200, { ...result, formatted });
         return;
       }
       json(res, 404, { error: "Not found" });

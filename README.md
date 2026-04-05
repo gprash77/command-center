@@ -35,10 +35,15 @@ command-center --help
 |--------|-------------|
 | `command-center list` | List project folder names under your configured projects root |
 | `command-center route "<text>"` | Show JSON route result (keyword → project) |
-| `command-center handle "<text>"` | Route + run adapter (see config). Use `-` or omit text to **read from stdin** |
+| `command-center handle "<text>"` | Route + run adapter. **Human-readable by default in a terminal**; use `--json` for raw JSON. `--text` forces readable output when piped |
 | `command-center dashboard` | Local web UI on **127.0.0.1** (default port **3847**) for Route / Handle |
 | `command-center doctor` | Print resolved `projectsRoot` and list folders |
 | `command-center config-path` | Show config file path (`COMMAND_CENTER_CONFIG` overrides) |
+
+### Handle output (readable vs JSON)
+
+- **Terminal:** output is **plain text** (lineups, picks, stub messages) unless stdout is **not** a TTY (e.g. piped to a file) — then you get **JSON** for scripting.
+- **Force:** `command-center handle --text "…"` or `command-center handle --json "…"`.
 
 ### Stdin (VoicePress / clipboard)
 
@@ -69,6 +74,8 @@ node dist/cli.js route "voicepress"
 Routing is **substring** match on keywords (first hit wins). Avoid short keywords that appear inside another project’s slug; defaults are tuned for that.
 
 **Fantasy roster shortcuts** (when keywords like “fantasy” are missing): **comma-separated player names** (`Patrick Mahomes, Travis Kelce`) or a **JSON** body that includes `"roster":[...]` routes to `fantasy-football-app` automatically.
+
+You do **not** need JSON for day-to-day use: phrases like `fantasy lineup` or comma-separated names are enough. JSON is for exact week/season/scoring options.
 
 Example (`projectAdapters` — omit = stub only for that app):
 

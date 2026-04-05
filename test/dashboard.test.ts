@@ -19,6 +19,17 @@ describe("dashboard server", () => {
       const j = (await r1.json()) as { matched?: boolean; projectId?: string };
       expect(j.matched).toBe(true);
       expect(j.projectId).toBe("voicepress");
+
+      const r2 = await fetch(base + "/api/handle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: "voicepress" }),
+      });
+      expect(r2.status).toBe(200);
+      const h = (await r2.json()) as { formatted?: string; ok?: boolean };
+      expect(h.ok).toBe(true);
+      expect(typeof h.formatted).toBe("string");
+      expect(h.formatted).toContain("voicepress");
     } finally {
       await close();
     }

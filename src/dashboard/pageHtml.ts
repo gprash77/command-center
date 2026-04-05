@@ -60,7 +60,11 @@ export function dashboardPageHtml(): string {
     };
     document.getElementById("btnHandle").onclick = async () => {
       try {
-        out.textContent = JSON.stringify(await post("/api/handle", { text: textEl.value }), null, 2);
+        const data = await post("/api/handle", { text: textEl.value });
+        out.textContent =
+          typeof data.formatted === "string"
+            ? data.formatted
+            : JSON.stringify(data, null, 2);
       } catch (e) {
         out.textContent = String(e);
       }

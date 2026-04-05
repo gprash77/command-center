@@ -68,6 +68,8 @@ node dist/cli.js route "voicepress"
 
 Routing is **substring** match on keywords (first hit wins). Avoid short keywords that appear inside another project’s slug; defaults are tuned for that.
 
+**Fantasy roster shortcuts** (when keywords like “fantasy” are missing): **comma-separated player names** (`Patrick Mahomes, Travis Kelce`) or a **JSON** body that includes `"roster":[...]` routes to `fantasy-football-app` automatically.
+
 Example (`projectAdapters` — omit = stub only for that app):
 
 ```json

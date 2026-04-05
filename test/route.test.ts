@@ -19,6 +19,14 @@ describe("routeText", () => {
     }
   });
 
+  it("matches codex for movie / recommendation phrasing", () => {
+    const r = routeText("movie recommendation for tonight", defaultConfig.routes);
+    expect(r.matched).toBe(true);
+    if (r.matched) {
+      expect(r.projectId).toBe("codex-app-builder");
+    }
+  });
+
   it("returns unmatched for unrelated text", () => {
     const r = routeText("nothing familiar here xyz123", defaultConfig.routes);
     expect(r.matched).toBe(false);

@@ -26,7 +26,22 @@ const extraKeywords: Record<string, string[]> = {
   // Avoid keyword "test" — it is a substring of `state-tests-with-evaluation-scoring`.
   "caaspp-practice": ["caaspp", "practice"],
   // Avoid bare "codex" so it does not steal from codex-notifier; "ideas" covers the old phrase.
-  "codex-app-builder": ["ideas", "idea", "app builder", "builder", "codex app"],
+  "codex-app-builder": [
+    "ideas",
+    "idea",
+    "app builder",
+    "builder",
+    "codex app",
+    "movie",
+    "movies",
+    "film",
+    "watch",
+    "recommend",
+    "recommendation",
+    "what to watch",
+    "tv show",
+    "streaming",
+  ],
   "codex-notifier": ["notifier", "notify", "notifications", "codex notifier"],
   "command-center": ["orchestrator", "command center"],
   "fantasy-football-app": ["fantasy", "lineup", "football"],

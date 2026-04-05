@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "projectAdapters": {
+    "fantasy-football-app": {
+      "type": "mcp",
+      "command": "node",
+      "args": ["./node_modules/tsx/dist/cli.mjs", "mcp/lineup-server.ts"],
+      "tool": "get_optimal_lineup"
+    },
+    "codex-app-builder": {
+      "type": "mcp",
+      "command": "node",
+      "args": ["./node_modules/tsx/dist/cli.mjs", "mcp/ideas-server.ts"],
+      "tool": "get_watch_ideas"
+    },
+    "command-center": {
+      "type": "mcp",
+      "command": "node",
+      "args": ["./dist/mcp/meta-server.js"],
+      "tool": "orchestrator_ping"
+    },
+    "codex-notifier": {
+      "type": "mcp",
+      "command": "node",
+      "args": ["./node_modules/tsx/dist/cli.mjs", "mcp/notify-server.ts"],
+      "tool": "enqueue_notification"
+    },
+    "caaspp-practice": {
+      "type": "mcp",
+      "command": "node",
+      "args": ["./node_modules/tsx/dist/cli.mjs", "mcp/practice-server.ts"],
+      "tool": "get_practice_question"
+    }
+  }
+}

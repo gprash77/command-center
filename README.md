@@ -111,18 +111,24 @@ Example (`projectAdapters` — omit = stub only for that app):
 - **script**: runs `sh -c <command>` with `cwd` = that project folder; user text is in env **`COMMAND_CENTER_TEXT`**.
 - **mcp**: spawns **`command`** with **`args`** (optional), **`cwd`** optional (default = project root; absolute or relative to that project). Calls MCP tool **`tool`** with arguments `{ "<textArgumentKey>": "<phrase>" }` (default key `text`). Uses the official MCP TypeScript SDK over stdio.
 
-### Real MCP pilots (fantasy + codex)
+### MCP (five wired projects)
 
-Example **`projectAdapters`** for **`fantasy-football-app`** (`get_optimal_lineup`) and **`codex-app-builder`** (`get_watch_ideas`): copy the entries from [`docs/mcp-two-apps.example.json`](docs/mcp-two-apps.example.json) into `~/.config/command-center/config.json` (merge with any keys you already have — do not replace the whole file unless you intend to).
+Full setup (merge config, build steps, env vars): **[`docs/MCP_SETUP.md`](docs/MCP_SETUP.md)**  
+Project-by-project status: **[`docs/PROJECTS_INVENTORY.md`](docs/PROJECTS_INVENTORY.md)**
 
-Then:
+Example **`projectAdapters`** for **fantasy**, **codex-app-builder**, **command-center**, **codex-notifier**, and **caaspp-practice**: copy from [`docs/mcp-five-apps.example.json`](docs/mcp-five-apps.example.json) into `~/.config/command-center/config.json` (merge with existing keys). Older two-app sample: [`docs/mcp-two-apps.example.json`](docs/mcp-two-apps.example.json).
+
+Then (after `npm install` / `npm run build` where each repo requires it):
 
 ```bash
 command-center handle "fantasy lineup"
 command-center handle "get ideas for a thriller"
+command-center handle "orchestrator ping"
+command-center handle "notify: build done"
+command-center handle "caaspp grade 3 math"
 ```
 
-See `~/projects/fantasy-football-app/mcp/README.md` and `~/projects/codex-app-builder/mcp/README.md` for tool semantics.
+See each app’s `mcp/README.md` where present.
 
 ## GitHub
 
@@ -140,6 +146,12 @@ git push -u origin main
 npm test
 npm run typecheck
 ```
+
+## Security & publishing
+
+- **[SECURITY.md](SECURITY.md)** — secrets, local trust model.
+- **[docs/PUBLISHING.md](docs/PUBLISHING.md)** — checklist before `git push`.
+- **`.env.example`** — optional `COMMAND_CENTER_CONFIG` override (copy to `.env` if you use dotenv loaders; not required for normal CLI use).
 
 ## Roadmap
 

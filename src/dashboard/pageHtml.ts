@@ -34,9 +34,11 @@ export function dashboardPageHtml(): string {
   <p class="hint">Local only. Same routing and adapters as the CLI.</p>
   <textarea id="text" placeholder="e.g. fantasy lineup or voicepress"></textarea>
   <div class="row">
-    <button type="button" id="btnRoute">Route</button>
-    <button type="button" class="primary" id="btnHandle">Handle</button>
+    <button type="button" class="primary" id="btnRun">Run</button>
+    <span class="hint" style="align-self:center;">Optional:</span>
+    <button type="button" id="btnRoute">Route only</button>
   </div>
+  <p class="hint" style="margin-top:0;">Run calls routing and your adapters (same as <code>command-center handle</code>). Route only shows which project would match—no MCP or HTTP.</p>
   <pre id="out">{}</pre>
   <script>
     const out = document.getElementById("out");
@@ -58,7 +60,7 @@ export function dashboardPageHtml(): string {
         out.textContent = String(e);
       }
     };
-    document.getElementById("btnHandle").onclick = async () => {
+    document.getElementById("btnRun").onclick = async () => {
       try {
         const data = await post("/api/handle", { text: textEl.value });
         out.textContent =

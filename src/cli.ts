@@ -5,11 +5,10 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadConfig, resolveProjectsRoot } from "./config/loadConfig.js";
 import { defaultConfigPath } from "./config/paths.js";
-import { adapterForProject } from "./adapters/resolveAdapter.js";
-import { dispatchHandle } from "./handle/dispatch.js";
 import { listProjectIds, projectPath } from "./projects/listProjects.js";
-import { routeText } from "./router/route.js";
 import { readStdinText } from "./cli/readStdin.js";
+import { routeCommand, handleCommand } from "./ops/commands.js";
+import { startDashboardServer } from "./dashboard/server.js";
 
 function readVersion(): string {
   try {
@@ -46,9 +45,7 @@ program
   .description("Show which project a phrase would route to (JSON)")
   .argument("<text>", "Natural language command")
   .action((text: string) => {
-    const config = loadConfig();
-    const result = routeText(text, config.routes);
-    console.log(JSON.stringify({ text, ...result }, null, 2));
+    console.log(JSON.stringify(routeCommand(text), null, 2));
   });
 
 program
@@ -63,35 +60,33 @@ program
   .action(async (text: string | undefined) => {
     const resolved =
       text === undefined || text === "-" ? readStdinText() : text;
-    const config = loadConfig();
-    const root = resolveProjectsRoot(config);
-    const result = routeText(resolved, config.routes);
-    if (!result.matched) {
-      console.log(
-        JSON.stringify(
-          { ok: false, error: "No route matched", text: resolved },
-          null,
-          2,
-        ),
-      );
+    const payload = await handleCommand(resolved);
+    if (!payload.ok) {
+      console.log(JSON.stringify(payload, null, 2));
       process.exitCode = 1;
       return;
     }
-    const adapter = adapterForProject(config, result.projectId);
-    const out = await dispatchHandle(
-      config,
-      root,
-      result.projectId,
-      resolved,
-      adapter,
-    );
-    console.log(
-      JSON.stringify(
-        { ok: true, route: result, adapter, result: out },
-        null,
-        2,
-      ),
-    );
+    console.log(JSON.stringify(payload, null, 2));
+  });
+
+program
+  .command("dashboard")
+  .description("Open a local web UI (127.0.0.1 only) for route/handle")
+  .option("-p, --port <n>", "port", "3847")
+  .action(async (opts: { port: string }) => {
+    const port = Number.parseInt(opts.port, 10);
+    if (Number.isNaN(port) || port < 0 || port > 65535) {
+      console.error("Invalid port");
+      process.exitCode = 1;
+      return;
+    }
+    const { port: bound, close } = await startDashboardServer(port);
+    const url = `http://127.0.0.1:${bound}`;
+    console.log(`Dashboard: ${url}`);
+    console.log("Ctrl+C to stop");
+    process.on("SIGINT", () => {
+      void close().then(() => process.exit(0));
+    });
   });
 
 program

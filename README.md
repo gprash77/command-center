@@ -1,6 +1,6 @@
 # command-center
 
-Personal CLI orchestrator: route natural-language commands to projects under `~/projects`. Supports **stub**, **HTTP**, **shell script**, and **MCP (stdio)** adapters per project.
+Personal CLI orchestrator: route natural-language commands to projects under `~/projects`. Supports **stub**, **HTTP**, **shell script**, and **MCP (stdio)** adapters, plus a **local web dashboard**.
 
 ## Requirements
 
@@ -36,6 +36,7 @@ command-center --help
 | `command-center list` | List project folder names under your configured projects root |
 | `command-center route "<text>"` | Show JSON route result (keyword → project) |
 | `command-center handle "<text>"` | Route + run adapter (see config). Use `-` or omit text to **read from stdin** |
+| `command-center dashboard` | Local web UI on **127.0.0.1** (default port **3847**) for Route / Handle |
 | `command-center doctor` | Print resolved `projectsRoot` and list folders |
 | `command-center config-path` | Show config file path (`COMMAND_CENTER_CONFIG` overrides) |
 
@@ -44,6 +45,15 @@ command-center --help
 - Pipe: `printf 'fantasy lineup' | node dist/cli.js handle -`
 - macOS clipboard: `pbpaste | node dist/cli.js handle -`
 - Or paste into the terminal after `node dist/cli.js handle` and press **Ctrl-D** to end stdin
+
+### Dashboard (v4)
+
+1. `npm run build`
+2. `node dist/cli.js dashboard` (or `node dist/cli.js dashboard --port 3847`)
+3. Open **http://127.0.0.1:3847** in a browser — use **Route** / **Handle** with the same config as the CLI.
+4. **Ctrl+C** in the terminal to stop.
+
+The server listens on **127.0.0.1 only** (not your LAN).
 
 ## Configuration
 
@@ -112,5 +122,5 @@ npm run typecheck
 ## Roadmap
 
 - **v2**: HTTP + script adapters, golden routing fixtures (`test/fixtures/golden-routing.json`)
-- **v3** (current): stdin `handle`, MCP stdio adapter, integration tests with `test/fixtures/mcp-echo.mjs`
-- **v4**: Optional dashboard / agent orchestrator
+- **v3**: stdin `handle`, MCP stdio adapter, `test/fixtures/mcp-echo.mjs`
+- **v4** (current): local **dashboard** (`command-center dashboard`) on 127.0.0.1

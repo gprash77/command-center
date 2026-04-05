@@ -1,6 +1,6 @@
 # command-center
 
-Personal CLI orchestrator: route natural-language commands to projects under `~/projects`. **v2** adds per-project **HTTP** and **shell script** adapters (plus **stub** default).
+Personal CLI orchestrator: route natural-language commands to projects under `~/projects`. Supports **stub**, **HTTP**, **shell script**, and **MCP (stdio)** adapters per project.
 
 ## Requirements
 
@@ -35,9 +35,15 @@ command-center --help
 |--------|-------------|
 | `command-center list` | List project folder names under your configured projects root |
 | `command-center route "<text>"` | Show JSON route result (keyword → project) |
-| `command-center handle "<text>"` | Route + run adapter (stub, http, or script — see config) |
+| `command-center handle "<text>"` | Route + run adapter (see config). Use `-` or omit text to **read from stdin** |
 | `command-center doctor` | Print resolved `projectsRoot` and list folders |
 | `command-center config-path` | Show config file path (`COMMAND_CENTER_CONFIG` overrides) |
+
+### Stdin (VoicePress / clipboard)
+
+- Pipe: `printf 'fantasy lineup' | node dist/cli.js handle -`
+- macOS clipboard: `pbpaste | node dist/cli.js handle -`
+- Or paste into the terminal after `node dist/cli.js handle` and press **Ctrl-D** to end stdin
 
 ## Configuration
 
@@ -52,7 +58,7 @@ node dist/cli.js route "voicepress"
 
 Routing is **substring** match on keywords (first hit wins). Avoid short keywords that appear inside another project’s slug; defaults are tuned for that.
 
-Example (optional `projectAdapters` — omit = stub only for that app):
+Example (`projectAdapters` — omit = stub only for that app):
 
 ```json
 {
@@ -69,6 +75,14 @@ Example (optional `projectAdapters` — omit = stub only for that app):
     "codex-app-builder": {
       "type": "script",
       "command": "node ./scripts/command-center-hook.mjs"
+    },
+    "some-app": {
+      "type": "mcp",
+      "command": "node",
+      "args": ["./mcp-server.mjs"],
+      "tool": "do_something",
+      "cwd": ".",
+      "textArgumentKey": "text"
     }
   }
 }
@@ -76,6 +90,7 @@ Example (optional `projectAdapters` — omit = stub only for that app):
 
 - **http**: `GET` to `url` with the user text in a query param (default name `text`; set `queryParam` to rename).
 - **script**: runs `sh -c <command>` with `cwd` = that project folder; user text is in env **`COMMAND_CENTER_TEXT`**.
+- **mcp**: spawns **`command`** with **`args`** (optional), **`cwd`** optional (default = project root; absolute or relative to that project). Calls MCP tool **`tool`** with arguments `{ "<textArgumentKey>": "<phrase>" }` (default key `text`). Uses the official MCP TypeScript SDK over stdio.
 
 ## GitHub
 
@@ -96,6 +111,6 @@ npm run typecheck
 
 ## Roadmap
 
-- **v2** (current): HTTP + script adapters, golden routing fixtures (`test/fixtures/golden-routing.json`)
-- **v3**: VoicePress handoff + MCP pilots
+- **v2**: HTTP + script adapters, golden routing fixtures (`test/fixtures/golden-routing.json`)
+- **v3** (current): stdin `handle`, MCP stdio adapter, integration tests with `test/fixtures/mcp-echo.mjs`
 - **v4**: Optional dashboard / agent orchestrator

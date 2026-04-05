@@ -1,6 +1,6 @@
 {
   "name": "command-center",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Personal CLI orchestrator: route natural-language commands to local projects",
   "type": "module",
   "engines": {
@@ -17,9 +17,13 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
-  "keywords": ["cli", "orchestrator"],
+  "keywords": [
+    "cli",
+    "orchestrator"
+  ],
   "license": "MIT",
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "commander": "^12.1.0",
     "zod": "^3.24.2"
   },

@@ -9,6 +9,7 @@ import { adapterForProject } from "./adapters/resolveAdapter.js";
 import { dispatchHandle } from "./handle/dispatch.js";
 import { listProjectIds, projectPath } from "./projects/listProjects.js";
 import { routeText } from "./router/route.js";
+import { readStdinText } from "./cli/readStdin.js";
 
 function readVersion(): string {
   try {
@@ -52,16 +53,23 @@ program
 
 program
   .command("handle")
-  .description("Route and invoke the configured adapter (stub, http, or script)")
-  .argument("<text>", "Natural language command")
-  .action(async (text: string) => {
+  .description(
+    "Route and invoke the configured adapter (stub, http, script, or mcp)",
+  )
+  .argument(
+    "[text]",
+    "Natural language command; use `-` or omit to read from stdin (pipe or paste + Ctrl-D)",
+  )
+  .action(async (text: string | undefined) => {
+    const resolved =
+      text === undefined || text === "-" ? readStdinText() : text;
     const config = loadConfig();
     const root = resolveProjectsRoot(config);
-    const result = routeText(text, config.routes);
+    const result = routeText(resolved, config.routes);
     if (!result.matched) {
       console.log(
         JSON.stringify(
-          { ok: false, error: "No route matched", text },
+          { ok: false, error: "No route matched", text: resolved },
           null,
           2,
         ),
@@ -70,8 +78,20 @@ program
       return;
     }
     const adapter = adapterForProject(config, result.projectId);
-    const out = await dispatchHandle(config, root, result.projectId, text, adapter);
-    console.log(JSON.stringify({ ok: true, route: result, adapter, result: out }, null, 2));
+    const out = await dispatchHandle(
+      config,
+      root,
+      result.projectId,
+      resolved,
+      adapter,
+    );
+    console.log(
+      JSON.stringify(
+        { ok: true, route: result, adapter, result: out },
+        null,
+        2,
+      ),
+    );
   });
 
 program

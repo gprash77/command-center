@@ -1,7 +1,8 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
 import { mkdtempSync, rmSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
+import { fileURLToPath } from "node:url";
 import { dispatchHandle } from "../src/handle/dispatch.js";
 import { defaultConfig } from "../src/config/defaults.js";
 
@@ -65,6 +66,32 @@ describe("dispatchHandle", () => {
       }
     } finally {
       rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("mcp", async () => {
+    const testDir = dirname(fileURLToPath(import.meta.url));
+    const repoRoot = join(testDir, "..");
+    const echoScript = join(testDir, "fixtures", "mcp-echo.mjs");
+    const out = await dispatchHandle(
+      defaultConfig,
+      "/tmp",
+      "fantasy-football-app",
+      "via-dispatch",
+      {
+        type: "mcp",
+        command: "node",
+        args: [echoScript],
+        tool: "echo",
+        cwd: repoRoot,
+      },
+    );
+    expect(out.kind).toBe("mcp");
+    if (out.kind === "mcp") {
+      expect(out.isError).toBe(false);
+      expect(out.content).toEqual([
+        { type: "text", text: "echo:via-dispatch" },
+      ]);
     }
   });
 });

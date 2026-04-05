@@ -18,6 +18,22 @@ export const adapterConfigSchema = z.discriminatedUnion("type", [
     /** Passed to `sh -c` on macOS/Linux; cwd is the project folder. */
     command: z.string().min(1),
   }),
+  z.object({
+    type: z.literal("mcp"),
+    /** Executable to spawn (e.g. `node` or `npx`). */
+    command: z.string().min(1),
+    args: z.array(z.string()).optional(),
+    /**
+     * Working directory for the MCP server process: omit = project root;
+     * absolute path or path relative to that project.
+     */
+    cwd: z.string().optional(),
+    /** Tool name to invoke with `callTool`. */
+    tool: z.string().min(1),
+    /** Property name for the user phrase in tool `arguments` (default: `text`). */
+    textArgumentKey: z.string().min(1).optional(),
+    env: z.record(z.string(), z.string()).optional(),
+  }),
 ]);
 
 export const configSchema = z.object({

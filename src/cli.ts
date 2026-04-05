@@ -5,7 +5,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadConfig, resolveProjectsRoot } from "./config/loadConfig.js";
 import { defaultConfigPath } from "./config/paths.js";
-import { runStubAdapter } from "./adapters/stubAdapter.js";
+import { adapterForProject } from "./adapters/resolveAdapter.js";
+import { dispatchHandle } from "./handle/dispatch.js";
 import { listProjectIds, projectPath } from "./projects/listProjects.js";
 import { routeText } from "./router/route.js";
 
@@ -51,10 +52,11 @@ program
 
 program
   .command("handle")
-  .description("Route and invoke the stub adapter (JSON)")
+  .description("Route and invoke the configured adapter (stub, http, or script)")
   .argument("<text>", "Natural language command")
-  .action((text: string) => {
+  .action(async (text: string) => {
     const config = loadConfig();
+    const root = resolveProjectsRoot(config);
     const result = routeText(text, config.routes);
     if (!result.matched) {
       console.log(
@@ -67,8 +69,9 @@ program
       process.exitCode = 1;
       return;
     }
-    const out = runStubAdapter({ projectId: result.projectId, text });
-    console.log(JSON.stringify({ ok: true, route: result, result: out }, null, 2));
+    const adapter = adapterForProject(config, result.projectId);
+    const out = await dispatchHandle(config, root, result.projectId, text, adapter);
+    console.log(JSON.stringify({ ok: true, route: result, adapter, result: out }, null, 2));
   });
 
 program
@@ -95,4 +98,4 @@ program
     }
   });
 
-program.parse(process.argv);
+void program.parseAsync(process.argv);

@@ -47,4 +47,5 @@ export const defaultConfig: CommandCenterConfig = {
   version: 1,
   projectsRoot: "~/projects",
   routes: buildRoutes(),
+  projectAdapters: {},
 };

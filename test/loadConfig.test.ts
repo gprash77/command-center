@@ -33,5 +33,26 @@ describe("loadConfig", () => {
     const c = loadConfig();
     expect(c.projectsRoot).toBe("/custom/root");
     expect(c.routes.length).toBeGreaterThan(0);
+    expect(c.projectAdapters).toEqual({});
+  });
+
+  it("merges projectAdapters over defaults", () => {
+    const configPath = join(tmpDir, "config.json");
+    writeFileSync(
+      configPath,
+      JSON.stringify({
+        version: 1,
+        projectAdapters: {
+          "fantasy-football-app": {
+            type: "http",
+            url: "http://127.0.0.1:1/x",
+          },
+        },
+      }),
+      "utf8",
+    );
+    process.env["COMMAND_CENTER_CONFIG"] = configPath;
+    const c = loadConfig();
+    expect(c.projectAdapters["fantasy-football-app"]?.type).toBe("http");
   });
 });

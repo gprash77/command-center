@@ -31,6 +31,10 @@ export function loadConfig(): CommandCenterConfig {
     version: fileConfig.version ?? defaultConfig.version,
     projectsRoot: fileConfig.projectsRoot ?? defaultConfig.projectsRoot,
     routes: fileConfig.routes ?? defaultConfig.routes,
+    projectAdapters: {
+      ...defaultConfig.projectAdapters,
+      ...fileConfig.projectAdapters,
+    },
   };
   return configSchema.parse(merged);
 }

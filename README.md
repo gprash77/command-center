@@ -1,6 +1,6 @@
 # command-center
 
-Personal CLI orchestrator: route natural-language commands to projects under `~/projects`. **v1** ships a config-driven keyword router and a **stub** adapter (no HTTP/MCP yet).
+Personal CLI orchestrator: route natural-language commands to projects under `~/projects`. **v2** adds per-project **HTTP** and **shell script** adapters (plus **stub** default).
 
 ## Requirements
 
@@ -35,7 +35,7 @@ command-center --help
 |--------|-------------|
 | `command-center list` | List project folder names under your configured projects root |
 | `command-center route "<text>"` | Show JSON route result (keyword → project) |
-| `command-center handle "<text>"` | Route + run stub adapter (JSON) |
+| `command-center handle "<text>"` | Route + run adapter (stub, http, or script — see config) |
 | `command-center doctor` | Print resolved `projectsRoot` and list folders |
 | `command-center config-path` | Show config file path (`COMMAND_CENTER_CONFIG` overrides) |
 
@@ -52,7 +52,7 @@ node dist/cli.js route "voicepress"
 
 Routing is **substring** match on keywords (first hit wins). Avoid short keywords that appear inside another project’s slug; defaults are tuned for that.
 
-Example:
+Example (optional `projectAdapters` — omit = stub only for that app):
 
 ```json
 {
@@ -60,9 +60,22 @@ Example:
   "projectsRoot": "~/projects",
   "routes": [
     { "keywords": ["fantasy", "lineup"], "projectId": "fantasy-football-app" }
-  ]
+  ],
+  "projectAdapters": {
+    "fantasy-football-app": {
+      "type": "http",
+      "url": "http://127.0.0.1:3456/orchestrator"
+    },
+    "codex-app-builder": {
+      "type": "script",
+      "command": "node ./scripts/command-center-hook.mjs"
+    }
+  }
 }
 ```
+
+- **http**: `GET` to `url` with the user text in a query param (default name `text`; set `queryParam` to rename).
+- **script**: runs `sh -c <command>` with `cwd` = that project folder; user text is in env **`COMMAND_CENTER_TEXT`**.
 
 ## GitHub
 
@@ -83,6 +96,6 @@ npm run typecheck
 
 ## Roadmap
 
-- **v2**: Real adapters (HTTP/subprocess), golden transcript tests
+- **v2** (current): HTTP + script adapters, golden routing fixtures (`test/fixtures/golden-routing.json`)
 - **v3**: VoicePress handoff + MCP pilots
 - **v4**: Optional dashboard / agent orchestrator
